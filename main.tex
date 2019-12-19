@@ -1,0 +1,187 @@
+\RequirePackage{silence}
+\WarningFilter{biblatex}{Patching footnotes failed}
+\documentclass[10pt, compress,british,xcolor={svgnames,dvipsnames,x11names},trans]{beamer}
+
+\usepackage{babel}
+\usepackage{csquotes}
+\usepackage{comment}
+\usepackage{tikzsymbols}
+% Wenyin used these packages
+\usepackage{marginnote}
+\usepackage{longtable}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{wasysym} % for checkboxes
+\usepackage{mathtools} % for overbrace and underbrace
+\usepackage{enumerate} % for style setting in itemize
+%%% mtheme customisations
+\usetheme[progressbar=frametitle,block=fill]{m}
+\setmonofont[Scale=0.92]{Fira Mono}
+\AtBeginSubsection{
+\metroset{color/background=dark}
+\frame[plain,c]{
+  \begin{center}
+  \begin{minipage}{25em}
+    \usebeamercolor[fg]{section title}
+    \usebeamerfont{section title}
+    \insertsubsection\\[-1ex]
+    \usebeamertemplate*{progress bar in section page}
+  \end{minipage}
+  \end{center}
+}
+\metroset{color/background=light}
+}
+%%%%% end mtheme
+
+\setbeamertemplate{frametitle continuation}[from second]
+\setbeamertemplate{bibliography item}[book]
+
+\usepackage{xeCJK}
+\setCJKmainfont{cwTeXFangSong}
+% \setCJKsansfont[BoldFont=Kozuka Gothic Pro]{Kozuka Gothic Pro L}
+\setCJKsansfont{IPAGothic}
+% \newCJKfontfamily{\xiheifont}[BoldFont=STHeiti]{STXihei}
+\newCJKfontfamily{\xiheifont}{WenQuanYi Micro Hei}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{chains}
+\usepackage{tikz-qtree}
+\usepackage{multicol}
+
+
+\usepackage{expex}
+%\lingset{glhangindent=2em,glspace=1em,aboveexskip=0pt,belowexskip=0pt,aboveglftskip=-3pt,extraglskip=3pt} %v0.1
+%\lingset{exskip=0pt,interpartskip=-3pt,belowpreambleskip=-3pt,belowglpreambleskip=-3pt,aboveglftskip=-3pt,extraglskip=3pt,glhangstyle=none}
+\usepackage{relsize}
+\usepackage{booktabs,tabularx}
+%\usepackage{textcomp}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily,breaklines=true,breakatwhitespace=true,
+keywordstyle={\color{NavyBlue}\bfseries}, showstringspaces=false,
+commentstyle={\color{PaleVioletRed4}},
+emphstyle={\color{OliveGreen}\bfseries}
+}
+
+\usepackage{algorithmic}
+\renewcommand{\algorithmiccomment}[1]{\alert{/* #1 */}}
+
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\makeatletter
+\pgfarrowsdeclare{crow's foot}{crow's foot}
+{
+  \pgfarrowsleftextend{+-.5\pgflinewidth}%
+  \pgfarrowsrightextend{+.5\pgflinewidth}%
+}
+{
+  \pgfutil@tempdima=0.5pt%
+  \advance\pgfutil@tempdima by.25\pgflinewidth%
+  \pgfsetdash{}{+0pt}%
+  \pgfsetmiterjoin%
+  \pgfpathmoveto{\pgfqpoint{0pt}{-6\pgfutil@tempdima}}%
+  \pgfpathlineto{\pgfqpoint{-6\pgfutil@tempdima}{0pt}}%
+  \pgfpathlineto{\pgfqpoint{0pt}{6\pgfutil@tempdima}}%
+  \pgfusepathqstroke%
+}
+
+\usepackage[backend=biber,style=apa]{biblatex}
+\DeclareLanguageMapping{british}{british-apa}
+\renewcommand{\finalnamedelim}{and}
+\renewcommand{\bibfont}{\small}
+\setlength{\bibhang}{1em}
+\setlength{\bibitemsep}{1ex}
+\bibliography{refs}
+\renewcommand{\UrlFont}{\ttfamily}
+
+\usepackage[os=win]{menukeys}
+
+
+% \title{Finite Volume Method Implementation in Fluid Dynamics Framework and Corresponding Adaptation Needed for MHD}
+% \title{SU2 Code Framework}
+\title{Superposition Laser Acceleration PIConGPU toy test}
+% \subtitle{With Mature FVM Engine SU2}
+\subtitle{Work Done in SNU}
+
+%\date{5 \& 12 March 2015}
+%\date{5 March 2015\\Session 1: Common Tasks and Concepts in NLP}
+%\date{12 March 2015\\Session 2: Software Libraries and Resources for NLP}
+\date{20 Dec 2019}
+\author{Wenyin Wei}
+\institute{
+Engineering Physics Department\\
+Tsinghua University Beijing
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Contents}
+\setbeamertemplate{section in toc}[sections numbered]
+% \tableofcontents
+\tableofcontents[hideallsubsections]
+\end{frame}
+
+\input{chapters/FVM_Intro.tex}
+
+
+
+\begin{frame}{Vertex-based Dual Grid}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/DualMeshControlVolume.png}
+    \caption{Dual mesh control volumes surrounding two nodes, $i$ and $j$, in the domain interior.}
+    % \label{fig:my_label}
+\end{figure}
+
+
+By virtue of the functionality of geometry-relevant source, researchers do not need to implement the area calculation step and are capable to use the face area and normal vector directly.
+
+\end{frame}
+
+\input{chapters/Maxwell.tex}
+
+% \input{chapters/Structure_SU2.tex}
+% \input{chapters/Physics_SU2.tex}
+\input{chapters/Schedule.tex}
+
+% \input{chapters/SummerExperience.tex}
+
+% \input{chapters/example-apps}
+% \input{chapters/layers}
+% \include{chapters/student-projects}
+
+% \plain{End of Session 1\\See you next week!}
+
+% \include{chapters/wordnet}
+
+% \plain{The End\\Thank you!\\\xiheifont 경청해 주셔서 감사합니다.\Winkey\\Farewell, wish you all enjoy new semester.\\Does this presentation have an appropriate length?}
+
+\begin{frame}{The End}
+Thanks for your listening. \\
+Thanks for my department's sponsor especially and SNU's beautiful sightseeing.
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{figures/sightseeing_chair.jpg}
+\end{figure}
+
+    
+\end{frame}
+\plain{May the sun arise from the east.}
+\plain{Backup Slides}
+\input{chapters/Time_Stepping_SU2.tex}
+\appendix
+
+\begin{frame}[allowframebreaks]
+\frametitle{Bibliography}
+
+
+\nocite{*}
+\printbibliography[heading=none]
+
+\end{frame}
+
+
+\end{document}

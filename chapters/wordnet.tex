@@ -1,0 +1,432 @@
+%!TEX root = Intro-NLP-seminar.tex
+\section{WordNets: lexical semantic networks}
+
+\newcommand{\mysynset}[1]{\text{(#1)}}
+\newcommand{\myrel}[1]{\text{\emph{\color{purple}#1}}}
+\newcommand{\myword}[1]{\text{`#1'}}
+\newcommand{\myconcept}[1]{\text{\scshape #1}}
+\newcommand{\myinst}[1]{\text{\scshape\color{green!30!black} #1}}
+
+\begin{frame}
+\frametitle{WordNet: An Electronic Lexical Database}
+
+\begin{itemize}
+\item \parencite{miller:wordnet:1995}
+\item Developed by Princeton University Cognitive Science Laboratory for (American) English
+\item Lexical entries organised by \emph{meaning} (semantic content)
+\item Wordnets for many other languages have been developed
+%\item For humans: new ways of navigating a dictionary/lexicon to learn about words
+%\item For computers: resource for performing (some level of) semantic analysis on natural language text
+\end{itemize}
+\end{frame}
+
+\subsection{Synsets}
+\begin{frame}
+\frametitle{Synsets = ``synonym set''}
+\begin{itemize}
+\item Basic unit; represents a word meaning by \alert{synonyms}, \alert{gloss} and \alert{relations to other synsets}
+\item Different senses of a word (collocation, phrasal verb, etc.) are placed in different synsets according to parts-of-speech
+\item Each synset contains senses of different words that are considered synonymous
+%\item For each synset:
+%  \begin{itemize}
+%    \item gloss
+%    \item semantic field
+%    \item example usage(s)
+%    \item sentence frame (verbs only)
+%  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{First 3 senses for noun ``court''}
+
+\begin{itemize}
+	\item 3 synsets, one for each sense (meaning)
+	\item Each synset contain member lemmas with same meaning, same POS
+	\item Each synset has a definition text; may have example sentence
+\end{itemize}
+
+\bigskip
+
+\lstset{keywordstyle=\color{red},keywords={court}}
+\begin{lstlisting}
+<noun.group> court, tribunal, judicature - (an assembly (including one or more judges) to conduct judicial business)
+
+<noun.group> court, royal_court - (the sovereign and his advisers who are the governing power of a state)
+
+<noun.artifact> court - (a specially marked horizontal area within which a game is played; "players had to reserve a court in advance")
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Synset Organisation}
+    
+\begin{itemize}
+\item 4 synset categories
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{l >{\ttfamily}c c}
+\toprule
+Category & POS code & numerical prefix\\
+\midrule
+noun & n & 1 \\
+verb & v & 2 \\
+adjective & a, s & 3 \\
+adverb & r & 4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+\item Primary key: 9-digit synset ID \alert{or} POS code + 8-digit synset ID
+\item WN3.0 synset (court, tribunal, judicature) can be identified by \alert{108329453} or \alert{n-08329453} or \alert{08329453-n} in different systems
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mapping Stanford Parser POS codes to WN POS code}
+
+\begin{algorithmic}
+\STATE \COMMENT{Ignore all other POS when looking up WN}
+\IF{\texttt{\$stanfordPOS} starts with `N'}
+	\STATE \texttt{\$wnPOS} $\leftarrow$ `n'
+	\STATE \texttt{\$wnPOSnum} $\leftarrow$ 1
+
+\ELSIF{\texttt{\$stanfordPOS} starts with `V'}
+	\STATE \texttt{\$wnPOS} $\leftarrow$ `v'
+	\STATE \texttt{\$wnPOSnum} $\leftarrow$ 2
+
+\ELSIF{\texttt{\$stanfordPOS} starts with `J'}
+	\STATE \texttt{\$wnPOS} $\leftarrow$ \{`a', `s'\}
+	\STATE \texttt{\$wnPOSnum} $\leftarrow$ 3
+
+\ELSIF{\texttt{\$stanfordPOS} starts with `R'}
+	\STATE \texttt{\$wnPOS} $\leftarrow$ `r'
+	\STATE \texttt{\$wnPOSnum} $\leftarrow$ 4
+\ENDIF 
+\end{algorithmic}
+
+
+\end{frame}
+
+
+\subsection{Relations}
+\begin{frame}
+\frametitle{Noun Synset Relations}
+%\framesubtitle{Nouns}
+%WordNet specifies relations between synsets and (compound) words
+
+%\begin{exampleblock}{Noun Synset Relations}
+\mode<presentation>{\small}
+\begin{description}
+\item[hypernymy] \mysynset{court, royal court} \myrel{is-a-kind-of} \mysynset{government, authorities, regime}
+\item[holonymy] \mysynset{finger} \myrel{is-part-of} \mysynset{hand, manus, mitt, paw} \\
+                \mysynset{flour} \myrel{is-substance-of} \mysynset{bread}, \mysynset{dough}, \mysynset{pastry} \\
+                \mysynset{jury} \myrel{is-member-of} \mysynset{court, tribunal, judicature}
+\item[instance] \mysynset{Mozart, Wolfgang Amadeus Mozart} \myrel{is-instance-of} \mysynset{composer}
+\end{description}
+(\ldots{}and their respective inverse relations)
+%\end{exampleblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{Verb Synset Relations}
+%\framesubtitle{Verbs}
+%WordNet specifies relations between synsets and (compound) words
+
+%\begin{exampleblock}{Verb Synset Relations}
+\mode<presentation>{\small}
+\begin{description}
+\item[hypernymy] \mysynset{stroll, saunter} \myrel{is-one-way-to} \mysynset{walk}
+\item[troponymy] \mysynset{fear} \myrel{has-specific-way} \mysynset{panic}
+\item[cause] \mysynset{teach} \myrel{causes} \mysynset{learn, larn, acquire}
+\item[entailment] \mysynset{buy, purchase} \myrel{entails} \mysynset{pay}, \mysynset{choose, take, select, pick out}
+\item[verb frames] \mysynset{attack, assail}: \\\texttt{Somebody --s something}\\\texttt{Somebody --s somebody}\\(very simple, without any extra info)
+\end{description}
+%\end{exampleblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lexical Relations}
+\mode<presentation>{\small}
+\begin{description}
+\item[antonymy] \myword{ugliness} \myrel{$\times$} \myword{beauty}, 
+                \myword{pull} \myrel{$\times$} \myword{push},\\
+                \myword{difficult} \myrel{$\times$} \myword{easy}, 
+                \myword{quickly} \myrel{$\times$} \myword{slowly}
+\item[attribute] \myword{strength} \myrel{has-attributes}: \myword{delicate}, \myword{rugged}, \myword{weak}, \myword{strong}
+\item[derivation] \myword{maintain} \myrel{is-derivationally-related-to} \myword{maintainable}, \myword{maintenance}, \myword{maintainer}
+\item[domain] \myword{medicine} \myrel{topic-has-terms}: \myword{acute}, \myword{fulgurating}, \myword{gauze}, \ldots\\
+              \myword{France} \myrel{region-has-terms}: \myword{Battle of Valmy}, \myword{Bastille}, \myword{jeu d'esprit}, \ldots\\
+              \myword{colloquialism} \myrel{usage-has-terms}: \myword{lousy}, \myword{humongous}, \myword{gobsmacked}, \ldots
+\item[pertainym] \myword{biannual} \myrel{pertains-to} \myword{year}, 
+                 \myword{ancestral} \myrel{pertains-to} \myword{ancestor},
+                 \myword{Liverpudlian} \myrel{pertains-to} \myword{Liverpool}
+\item[participle] \myrel{a} \myword{handheld} \myrel{something-participates-in} \myword{hold}
+\end{description}
+\end{frame}
+
+\subsection{Getting the Data}
+
+\begin{frame}
+\frametitle{Princeton WordNet Data}
+    
+\begin{itemize}[<+->]
+\item Browse/explore online: \url{http://wordnet.princeton.edu/}
+\item Searching WordNet: APIs for many programming languages available
+\item \ldots But I recommend downloading WordNet as MySQL data
+\item Then use whatever programming language you like to query
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{WordNet SQL}
+    
+\begin{itemize}
+\item \url{http://wnsql.sourceforge.net/}
+\item \menu{Download > wnsql > mysql > 3.0 > mysql-3.0.0-30-wn-30.zip} Unzip. 
+\item Create a MySQL database, e.g.~ \texttt{wordnet30}
+\item Start a Windows command prompt.\\\menu{Windows Start > Run} type \menu{cmd} \return
+
+\begin{lstlisting}[backgroundcolor=\color{black},basicstyle=\ttfamily\color{green}, 
+escapechar=|, framexleftmargin=1em, xleftmargin=1em]
+> cd <folder containing unzipped contents> |\return|
+> restore.bat |\return|
+\end{lstlisting}
+
+\item You'll be prompted for the database name, username and password. Wait while the data is copied into tables.
+
+\item (May need to add \path{C:\xampp\mysql\bin} to system path)
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Some Tables in WN-MySQL}
+    
+\begin{tikzpicture}[every node/.style={rectangle split, rectangle split parts=2, draw},
+every text node part/.style={align=center}] 
+\node (words) [text width=4em] 
+{words \nodepart{two}{\textbf{wordid}\\lemma}};
+
+\node (senses) [text width=5em, right=3em of words]
+{senses \nodepart{two}\textbf{senseid}\\wordid\\synsetid\\sensenum\\\ldots};
+
+\node (synsets) [text width=5em, right=3em of senses]
+{synsets \nodepart{two}\textbf{synsetid}\\pos\\definition\\\ldots};
+
+\path[-crow's foot] (words) edge (senses);
+\path[-crow's foot] (synsets) edge (senses);
+
+\pause
+
+\node (semlinks) [text width=5em, right = 4em of synsets]
+{semlinks \nodepart{two}synset1id\\synset2id\\linkid};
+
+\node (linktypes) [text width=5em, below = 3em of semlinks]
+{linktypes \nodepart{two}\textbf{linkid}\\link\\\ldots};
+
+\path[crow's foot-crow's foot] (semlinks) edge (synsets);
+\path[-crow's foot] (linktypes) edge (semlinks);
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Querying Synsets (Senses) of a Lemma}
+    
+\begin{lstlisting}[language=SQL]
+SELECT lemma, synsetid, definition
+FROM words INNER JOIN senses USING (wordid)
+     INNER JOIN synsets USING (synsetid)
+WHERE lemma = 'plant' AND pos = 'n';
+\end{lstlisting}
+
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,columns=fixed]
++-------+-----------+--------------------------------------------+
+| lemma | synsetid  | definition                                 |
++-------+-----------+--------------------------------------------+
+| plant | 100017222 | (botany) a living organism ....            |
+| plant | 103956922 | buildings for carrying on industrial labor |
+| plant | 105906080 | something planted secretly for...          |
+| plant | 110438470 | an actor situated in the audience          |
++-------+-----------+--------------------------------------------+
+4 rows in set (0.00 sec)
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Querying Synonyms of a Particular Sense (Synset)}
+    
+\begin{lstlisting}[language=SQL]
+SELECT lemma
+FROM words INNER JOIN senses USING (wordid)
+     INNER JOIN synsets USING (synsetid)
+WHERE synsetid = 103956922;
+\end{lstlisting}
+
+\begin{lstlisting}
++------------------+
+| lemma            |
++------------------+
+| industrial plant |
+| plant            |
+| works            |
++------------------+
+3 rows in set (0.00 sec)
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Looking up Semantic Relations}
+
+\begin{lstlisting}[language=SQL]
+SELECT synset2id
+FROM semlinks INNER JOIN synsets A 
+                 ON (A.synsetid = semlinks.synset1id)
+              INNER JOIN linktypes USING (linkid)
+WHERE A.synsetid = 103956922 AND LINK = 'hypernym';
+
+SELECT lemma
+FROM words INNER JOIN senses USING (wordid)
+     INNER JOIN synsets USING (synsetid)
+WHERE synsetid = 102914991;
+\end{lstlisting}
+
+\begin{columns}[T]
+\begin{column}{.45\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
++-----------+
+| synset2id |
++-----------+
+| 102914991 |
++-----------+
+1 row in set (0.00 sec)
+\end{lstlisting}
+\end{column}
+
+\begin{column}{.49\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
++------------------+
+| lemma            |
++------------------+
+| building complex |
+| complex          |
++------------------+
+2 rows in set (0.00 sec)
+\end{lstlisting}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+\subsection{Other Lexical Resources Linking to WordNet}
+
+\begin{frame}
+\frametitle{Multilingual Wordnets}
+    
+\begin{itemize}[<+->]
+\item Wordnets in different languages -- same architecture 
+\item Some free, some not: \url{http://globalwordnet.org/}
+\item Almost all are `linked' to PWN (English) by \alert{synsetid}
+\item WordNet Bahasa (\url{http://wn-msa.sourceforge.net/}) \parencite{Bond:etal:WordNetBahasa:2014}
+\item More languages: Open Multilingual WordNet (\url{http://compling.hss.ntu.edu.sg/omw/}) \parencite{Bond:Paik:2012}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Looking up Synsets in Other WordNets}
+%\begin{itemize}
+%\item Refer to relations between English WordNet synsets
+%\item Copy selected relations over to Malay WordNet where possible
+%\end{itemize}
+
+%\includegraphics[width=\textwidth]{synsets-svg}
+\begin{center}
+
+\tikzstyle{synset}=[text width=15mm, font=\footnotesize,text centered]
+\tikzstyle{arrlabel}=[<-,above,font=\scriptsize]
+\tikzstyle{corr}=[<->,dashed]
+\tikzstyle{every edge}=[draw,>=stealth']
+\begin{tikzpicture}
+\path[node distance=32mm] node[synset] (dictionary) {(dictionary, lexicon)}
+      node[synset,right of=dictionary] (wordbook) {(wordbook)}
+      edge[arrlabel] node {hyper} (dictionary)
+      node[synset,right of=wordbook,text width=22mm] (reference) {(reference,\\reference book)}
+      edge[arrlabel] node {hyper} (wordbook)
+      node[synset,right of=reference,text width=] (book) {(book)}
+      edge[arrlabel] node {hyper} (reference);
+
+\node[above of=dictionary,xshift=45mm,yshift=10mm,font=\bfseries] {English};
+
+\begin{scope}[font=\footnotesize\color{mLightBrown}]
+\node[above of=dictionary] {106418901};
+\node[above of=wordbook] {106418693};
+\node[above of=reference] {106417598};
+\node[above of=book] {106410904};
+\end{scope}
+
+\begin{scope}[node distance=20mm]
+\uncover<2->{
+\path node[synset,below of=dictionary] (kamus) {(leksikon, kamus)}
+      edge[corr] (dictionary)
+      node[synset,below of=reference] (rujukan) {(rujukan)}
+      edge[corr] (reference)
+      node[synset,below of=book,text width=] (buku) {(buku)}
+      edge[corr] (book);
+\node[below of=dictionary,yshift=-15mm,xshift=45mm,font=\bfseries] {Malay};
+}
+\uncover<3->{
+\path (rujukan) edge[arrlabel] node{hyper} (kamus);
+}
+\uncover<4->{
+\path (buku) edge[arrlabel] node{hyper} (rujukan);
+}
+\end{scope}
+
+\uncover<5->{
+\begin{scope}[font=\footnotesize\color{mLightBrown}]
+\node[below of=kamus] {06418901-n};
+\node[below of=rujukan] {06417598-n};
+\node[below of=buku] {06410904-n};
+\end{scope}
+
+}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other WordNet-based Resources}
+    
+\begin{itemize}[<+->]
+\item SentiWordNet \parencite{baccianella2010sentiwordnet}
+\begin{itemize}
+	\item \url{http://sentiwordnet.isti.cnr.it/}
+	\item Provides sentiment scores for each synset
+	\item But see also ML-SentiCon \parencite{cruz2014building} \url{http://www.lsi.us.es/~fermin/index.php/Datasets}
+\end{itemize}
+\item Illustrated WordNet (from Japanese WordNet) \parencite{bond2009enhancing}
+	\begin{itemize}
+		\item \url{http://wn-msa.sourceforge.net/eng/pics.html}
+		\item Provides a clipart for each synset
+	\end{itemize}
+\item \ldots Many more! Most are OSS.
+\end{itemize}
+
+\end{frame}

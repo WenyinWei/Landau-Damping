@@ -1,0 +1,119 @@
+\section{Physics of SU2}
+
+\begin{frame}{Conservative Equations}
+\begin{equation}
+\frac{\partial \boldsymbol{U}}{\partial t}+\nabla \cdot \boldsymbol{F}^{c}-\nabla \cdot\left(\mu^{v k} \boldsymbol{F}^{v k}\right)=\boldsymbol{Q} \quad \text { in }\Omega,  \quad t>0
+\end{equation}
+    
+\end{frame}
+
+\subsection{Fluid Model}
+\begin{frame}[allowframebreaks]
+\frametitle{Reynolds-Averaged Navier–Stokes Equations (RANS)}
+\begin{equation}
+\left\{\begin{array}{ll}{\mathcal{R}(U)=\frac{\partial U}{\partial t}+\nabla \cdot \boldsymbol{F}^{c}-\nabla \cdot\left(\mu^{v k} \boldsymbol{F}^{v k}\right)-\boldsymbol{Q}=0} & {\text { in } \Omega, \quad t>0} \\ {v=\mathbf{0}} & {\text { on }S,} \\ {\partial_{n} T=0} & {\text { on } S} \\ {(\boldsymbol{W})_{+}=W_{\infty}} & {\text { on } \Gamma_{\infty}}\end{array}\right.
+\end{equation}
+
+
+\begin{equation*}
+\frac{\partial \boldsymbol{U}}{\partial t}+\nabla \cdot \boldsymbol{F}^{c}-\nabla \cdot\left(\mu^{v k} \boldsymbol{F}^{v k}\right)=Q \quad \text { in } \Omega, t>0
+\end{equation*}
+
+\framebreak
+
+\begin{equation*}
+\boldsymbol{U}=\left\{\begin{array}{c}{\rho } \\ {\rho \boldsymbol{v} } \\ {\rho E}\end{array}\right\},\quad
+\boldsymbol{F}^{c}=\left\{\begin{array}{c}{\rho \boldsymbol{v}} \\ {\rho \boldsymbol{v} \otimes \boldsymbol{v}+ p\mathcal{I} } \\ {\rho E \boldsymbol{v}+p \boldsymbol{v}}\end{array}\right\}
+\end{equation*}
+
+\begin{equation*}
+\boldsymbol{F}^{v1}=\left\{\begin{array}{c}{\cdot} \\ {\mathcal{\tau}} \\ {\mathcal{\tau} \cdot \boldsymbol{v}}\end{array}\right\},\quad
+\boldsymbol{F}^{v2}=\left\{\begin{array}{c}{\cdot} \\ {\cdot} \\ {c_p \nabla T}\end{array}\right\},\quad
+Q=\left\{\begin{array}{c}{q_\rho} \\ {\boldsymbol{q}_{\rho\boldsymbol{v}}} \\ {q_{\rho E}}\end{array}\right\}
+\end{equation*}
+
+\begin{equation}
+\mathcal{\tau}=\nabla \boldsymbol{v}+\nabla \boldsymbol{v}^{T}-\frac{2}{3} \mathcal{I}(\nabla \cdot \boldsymbol{v})
+\end{equation}
+
+For \textbf{ideal gas},
+\begin{equation}
+    p=(\gamma-1)\rho[E-\frac{1}{2}(\boldsymbol{v}\cdot \boldsymbol{v})],
+\end{equation}
+\begin{equation}
+    T=p/(\rho R), 
+\end{equation}
+\begin{equation}
+    c_p = \gamma R/(\gamma-1)
+\end{equation}
+
+The total viscosity is divided into a laminar $\mu_{dyn}$  and a
+turbulent $\mu_{tur}$ component.
+\begin{equation}
+\mu^{v 1}=\mu_{\mathrm{dyn}}+\mu_{\mathrm{tur}}, \quad \mu^{v 2}=\frac{\mu_{\mathrm{dyn}}}{P r_{d}}+\frac{\mu_{\mathrm{tur}}}{P r_{t}},
+\end{equation}
+where $Pr_d$ and $Pr_t$ are the dynamic and turbulent Prandtl numbers,
+respectively.
+
+
+
+\framebreak
+\textbf{Supported Boundary Conditions}
+\begin{itemize}
+    \item Euler (flow tangency) and symmetry wall,
+    \item no-slip wall (adiabatic and isothermal),
+    \item far-field and near-field
+boundaries,
+    \item characteristic-based inlet boundaries (stagnation, mass
+flow, or supersonic conditions prescribed),
+    \item characteristic-based
+outlet boundaries (back pressure prescribed),
+    \item periodic boundaries,
+    \item nacelle inflow boundaries (fan face Mach number prescribed),
+    \item nacelle exhaust boundaries (total nozzle temp and total nozzle
+pressure prescribed).
+\end{itemize}
+
+The turbulent viscosity $\mu_{tur}$ is obtained from a suitable turbulence
+model involving the flow state and a set of new variables. The (1) \textbf{Menter
+shear-stress transport} model and the (2) \textbf{Spalart–Allmaras} model are two
+of the most common and widely used turbulence models for the
+analysis and design of engineering applications in turbulent flows.
+    
+
+\end{frame}
+
+\begin{frame}{SU2 Framework}
+\uncover<+->{\begin{equation*}
+\frac{\partial U}{\partial t}+\nabla \cdot \boldsymbol{F}^{c}-\nabla \cdot\left(\mu^{v k} \boldsymbol{F}^{v k}\right)=Q \quad \text { in } \Omega, t>0
+\end{equation*}
+}
+\uncover<+->{\[ \Downarrow \]
+\begin{align*}
+    \int_{\Omega_{i}} \frac{\partial U}{\partial t} d \Omega & + \sum_{j \in \mathcal{N}(i)}\left(\tilde{F}_{i j}^{c}+\tilde{F}_{i j}^{v k}\right) \Delta S_{i j}-Q\left|\Omega_{i}\right| \\ 
+=\int_{\Omega_{i}} \frac{\partial U}{\partial t} d \Omega & +  R_{i}(U)=0
+\end{align*}
+}
+
+For each variable in each cell, there is a residual.
+\end{frame}
+
+\begin{frame}{Two-Temperature Model for High-Speed Non-Equilibrium Flow}
+    
+\end{frame}
+
+\begin{frame}{Heat Equation}
+    
+\end{frame}
+
+\begin{frame}{Wave Equation}
+    
+\end{frame}
+
+\begin{frame}{Poisson Equation}
+    
+\end{frame}
+
+\begin{frame}{Equations of Linear Elasticity}
+    
+\end{frame}

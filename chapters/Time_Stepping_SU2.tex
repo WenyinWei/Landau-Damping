@@ -1,0 +1,73 @@
+\section{BACKUP: Time Integration Method in SU2}
+
+\subsection{Steady Simulations}
+
+
+\begin{frame}[allowframebreaks]{Implicit Method, Euler Backward Method}
+
+\begin{equation}
+\int_{\Omega_{i}} \frac{\partial \boldsymbol{U}_i}{\partial t} d \Omega+\boldsymbol{R}_{i}(\boldsymbol{U}) \approx\left|\Omega_{i}\right| \frac{\mathrm{d} \boldsymbol{U}_{i}}{\mathrm{d} t}+R_{k}(\boldsymbol{U})=0 \quad \rightarrow \quad \frac{\left|\Omega_{i}^{n}\right|}{\Delta t_{i}^{n}} \Delta \boldsymbol{U}_{i}^{n}=-\boldsymbol{R}_{i}\left(\boldsymbol{U}^{n+1}\right)
+\end{equation}
+where $\Delta \boldsymbol{U}_{i}^{n}=\boldsymbol{U}_{i}^{n+1}-\boldsymbol{U}_{i}^{n}$ means the variables in the cell $i$, $\boldsymbol{R}_i$ is residuals for those variables. However, the residuals at time $n + 1$ are unknown, and linearization about $t^n$ is
+needed:
+
+\begin{multline}
+    \boldsymbol{R}_{i}\left(\boldsymbol{U}^{n+1}\right)=\boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right)+\frac{\partial \boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right)}{\partial t} \Delta t_{i}^{n}+\mathcal{O}\left(\Delta t^{2}\right)\\=\boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right)+\sum_{j \in \mathcal{N}(i)} \frac{\partial \boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right)}{\partial \boldsymbol{U}_{j}} \Delta \boldsymbol{U}_{j}^{n}+\mathcal{O}\left(\Delta t^{2}\right)
+\end{multline}
+
+\begin{equation}
+\left(\frac{\left|\Omega_{i}\right|}{\Delta t_{i}^{n}} \delta_{i j}+\frac{\partial \boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right)}{\partial \boldsymbol{U}_{j}}\right) \cdot \Delta \boldsymbol{U}_{j}^{n}=-\boldsymbol{R}_{i}\left(\boldsymbol{U}^{n}\right),
+\end{equation}
+
+If a flux $\tilde{F}_{i j}$ has a stencil of points
+${i,j}$, then contributions are made to the Jacobian at four points:
+\begin{equation}
+\frac{\partial \boldsymbol{R}}{\partial \boldsymbol{U}} :=\frac{\partial \boldsymbol{R}}{\partial \boldsymbol{U}}+\left[\begin{array}{ccccc}{\ddots} & {} & {} & {} & {} \\ {} & {\frac{\partial \tilde{F}_{i j}}{\partial U_{i}}} & {\cdots} & {\frac{\partial \tilde{F}_{i j}}{\partial U_{j}}} \\ {} & {\vdots} & {\ddots} & {\vdots} \\ {} & {-\frac{\partial \tilde{F}_{i j}}{\partial U_{i}}} & {\cdots} & {-\frac{\partial \tilde{F}_{i j}}{\partial U_{j}}} \\ {} & {} & {} & {\ddots}\end{array}\right]
+\end{equation}
+The position of these four terms are to be checked.
+
+
+The matrix is very large and contains $(\text{Cell Num} * \text{Variable Num})^2$ components. If one doesn't use the implicit methods in the time-stepping procedure, then there is no necessity to solve the huge sparse linear algebra problem subtly, because all components of the matrix are allocated at the diagonal line.  
+
+Note that, despite implicit schemes being unconditionally stable in theory, a specific value of $\Delta t_i^n$ is needed
+to relax the problem. SU2 uses a local-time-stepping technique to accelerate convergence to a steady state.
+Local-time-stepping allows each cell in the mesh to advance at a different local time step. Calculation of the
+local time step requires the estimation of the eigenvalues and first-order approximations to the Jacobians at
+every node i according to
+
+\begin{equation}
+\Delta t_{i}=N_{C F L} \min \left(\frac{\left|\Omega_{i}\right|}{\lambda_{i}^{\operatorname{conv}}}, \frac{\left|\Omega_{i}\right|}{\lambda_{i}^{v i s c}}\right)
+\end{equation}
+
+where $N_{CFL}$ is the Courant-Friedrichs-Lewy (CFL) number, $\left|\Omega_{i}\right|$ is the volume of the cell $i$ and $\lambda_{i}^{v i s c}$
+is the integrated convective spectral radius computed as
+
+\begin{equation}
+\lambda_{i}^{c o n v}=\sum_{j \in \mathcal{N}(i)}\left(\left|\vec{u}_{i j} \cdot \vec{n}_{i j}\right|+c_{i j}\right) \Delta S
+\end{equation}
+
+where $\vec{u}_{i j}=\left(\vec{u}_{i}+\vec{u}_{j}\right) / 2$, and $c_{i j}=\left(c_{i}+c_{j}\right) / 2$ denote the velocity and the speed of sound at the cell face.
+$\vec{n}_{i j}$ denotes the normal direction of the control surface and $\Delta S$, its area. On the other hand, the viscous
+spectral radius $\lambda_{i}^{v i s c}$ is computed as
+\begin{equation}
+\lambda_{i}^{v i s c}=\sum_{j \in \mathcal{N}(i)} C \frac{\mu_{i j}}{\rho_{i j}} S_{i j}^{2}
+\end{equation}
+where $C$ is a constant, $\mu_{i j}$ is the sum of the laminar and eddy viscosities in a turbulent calculation and $\rho_{i j}$
+is the density evaluated at the midpoint of the edge ${i,j}$.
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Dual-Time-Stepping}
+\begin{equation}
+\frac{\partial \boldsymbol{U}}{\partial \tau}+\boldsymbol{R}_{i}^{*}(\boldsymbol{U})=0
+\end{equation}
+with
+\begin{equation}
+\begin{aligned} R_{i}^{*}(\boldsymbol{U})=& \frac{3}{2 \Delta t} \boldsymbol{U}_{i} \\+& \frac{1}{\left|\Omega_{i}\right|^{n+1}}\left(\boldsymbol{R}_{i}(\boldsymbol{U})-\frac{2}{\Delta t}\left|\Omega_{i}\right|^{n} \boldsymbol{U}_{i}^{n}+\frac{1}{2 \Delta t}\left|\Omega_{i}\right|^{n-1} \boldsymbol{U}_{i}^{n-1}\right) \end{aligned}
+\end{equation}
+for second-order accuracy in time (backward difference formula),
+where $\Delta t$ is the physical time step, $\tau$ is a fictitious time used to
+converge the steady-state problem, $\boldsymbol{R}_i(\boldsymbol{U})$ denotes the residual of the
+governing equations.
+
+\end{frame}

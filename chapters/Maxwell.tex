@@ -1,0 +1,371 @@
+%!TEX root = Intro-NLP-seminar.tex
+
+\section{Maxwell Equations in FVM}
+
+% \subsection{Denotations and Equations used in Maxwell-FVM}
+\begin{frame}{Maxwell Equations}
+Maxwell equations indicate that the $\boldsymbol{E}$ and $\boldsymbol{H}$ changes are decided by the curl of the other variable. \parencite{rao1999time} That is unprecedented in other fluid equations, which brings new numerical trouble.
+
+\begin{equation}
+\left\{\begin{array}{l}{\nabla \times \boldsymbol{H}-\varepsilon \frac{\partial \boldsymbol{E}}{\partial t}-\sigma \boldsymbol{E}=\boldsymbol{J}} \\ {\nabla \times \boldsymbol{E}+\mu \frac{\partial \boldsymbol{H}}{\partial t}=\boldsymbol{K}}\end{array}\right.
+\end{equation}
+
+The following continuity conditions always work for any interface,
+
+\begin{equation}
+\begin{array}{r}{\left[\boldsymbol{E}_{\mathrm{\tau}}, \boldsymbol{H}_{\mathrm{\tau}}\right]_{-}^{+}=0} \\ {\left[\varepsilon \boldsymbol{a}_{\mathrm{n}} \cdot \boldsymbol{E}, \mu \boldsymbol{a}_{\mathrm{n}} \cdot \boldsymbol{H}\right]_{-}^{+}=0}\end{array}
+\end{equation}
+
+The $[\ \cdot\ ]^+_-$ symbols mean the difference between the positive side of the interface and the negative.
+
+\end{frame}
+
+% \begin{frame}{Maxwell Equations}
+
+% In the special cases of impenetrable obstacles, one would take $\boldsymbol{e} = 0$ on perfect conductors and $\boldsymbol{h} = 0$ on perfectly magnetizable media, respectively.
+
+% \begin{equation}
+% \left\{\begin{array}{l}{\left.\boldsymbol{E}_{\mathrm{\tau}}\right|_{\partial \Omega}=\boldsymbol{e}} \\ {\left.\boldsymbol{H}_{\mathrm{\tau}}\right|_{\partial \Omega}=\boldsymbol{h}}\end{array}\right.
+% \end{equation}
+
+% The $\boldsymbol{e} = 0$ boundary condition is a common one in electromagnetic simulation, but primitive. More advanced boundary to simulate far-field condition will be illustrated subsequently.
+
+% \end{frame}
+
+% \begin{frame}{Maxwell Equations}
+
+% For convenience to do computation, $s$ is denoted as a function mapping a vector to an antisymmetric 3 x 3 matrices.
+% \begin{equation}
+% s : R^{3} \rightarrow \Lambda^{2}\left(R^{3}\right)
+% \end{equation}
+
+
+% \begin{equation}
+% s :\left(v_{1}, v_{2}, v_{3}\right) \longmapsto\left[\begin{array}{ccc}{0} & {-v_{3}} & {v_{2}} \\ {v_{3}} & {0} & {-v_{1}} \\ {-v_{2}} & {v_{1}} & {0}\end{array}\right]
+% \end{equation}
+
+% Special divergence is also defined, for handling the divergence of a 'matrix'.
+% \begin{equation}
+% [\operatorname{Div}(s(\boldsymbol{V}))]_{q}=\sum_{p=1}^{3} \frac{\partial}{\partial x^{p}}[s(\boldsymbol{V})]_{p q}
+% \end{equation}
+
+
+% \end{frame}
+
+% \begin{frame}{Maxwell Equations}
+% There are two essential characteristics of this funciton.
+
+% Firstly, to calculate the curl of a vector-value variable by a divergence operator is not availiable. 
+% \begin{equation}
+% \operatorname{Div}(s(\boldsymbol{V}))=\nabla \times \boldsymbol{V}
+% \end{equation}
+
+
+% Secondly, it makes it easier to do cross-product.
+% \begin{equation}
+% s(\boldsymbol{a}_n)\boldsymbol{V}= \boldsymbol{a}_n \times \boldsymbol{V}
+% \end{equation}
+
+
+% \end{frame}
+
+
+
+% \begin{frame}{Maxwell Equations}
+% \begin{equation}
+% \left\{\begin{array}{l}{\varepsilon \frac{\partial \boldsymbol{E}}{\partial t}-\operatorname{Div}(s(\boldsymbol{H}))+\sigma \boldsymbol{E}=-\boldsymbol{J}} \\ {\mu \frac{\partial \boldsymbol{H}}{\partial t}+\operatorname{Div}(s(\boldsymbol{E}))=\boldsymbol{K}}\end{array}\right.
+% \end{equation}
+
+
+% \begin{equation}
+% \alpha \frac{\partial \boldsymbol{U}}{\partial t}+\operatorname{div}(\mathcal{A} \boldsymbol{U})+\mathcal{B} \boldsymbol{U}=\boldsymbol{G}
+% \end{equation}
+
+% Attention, the $\operatorname{div}$ operates on each row of 6 x 3 matrix and acquire a 6 x 1 vector, different from the $\operatorname{Div}$ operator.
+
+% \begin{equation}
+% \begin{array}{c}{[\alpha]=\left[\begin{array}{cc}{\varepsilon} & {0} \\ {0} & {\mu}\end{array}\right] \quad[\mathcal{A}]=\left[\begin{array}{cc}{0} & {-s(\cdot)} \\ {s(\cdot)} & {0}\end{array}\right] \quad[\mathcal{B}]=\left[\begin{array}{cc}{\sigma} & {0} \\ {0} & {0}\end{array}\right]} \\ {\boldsymbol{G}=\left[\begin{array}{c}{-\boldsymbol{J}} \\ {\boldsymbol{K}}\end{array}\right]}\end{array}
+% \end{equation}
+
+% \begin{equation}
+% \mathcal{A} U=F(U)=\left(F_{1}(U) ; F_{2}(U) ; F_{3}(U)\right)
+% \end{equation}
+
+% \end{frame}
+
+% \begin{frame}{Maxwell Equation, Spatial Discretization}
+% Let's put the current density aside, which is not a big problem after the integration.
+
+% Then it becomes the \alert{Conservative Form Maxwell equations}:
+
+% \begin{equation}
+% \begin{aligned} \varepsilon \frac{\partial \boldsymbol{E}}{\partial t}-\nabla \times \boldsymbol{H} &=0 \\ \mu \frac{\partial \boldsymbol{H}}{\partial t}+\nabla \times \boldsymbol{E} &=0 \end{aligned}
+% \end{equation}
+
+
+
+% \begin{equation}
+% \mathcal{A} \boldsymbol{U}=F(\boldsymbol{U})=\left(F_{1}(\boldsymbol{U}) ; F_{2}(\boldsymbol{U}) ; F_{3}(\boldsymbol{U})\right)
+% \end{equation}
+
+% \end{frame}
+
+
+
+% \begin{frame}{Maxwell Equations}
+% \begin{equation}
+% F_{1}(\boldsymbol{U})=\left[\begin{array}{c}{0} \\ {H_{2}} \\ {-H_{y}} \\ {0} \\ {-E_{z}} \\ {E_{y}}\end{array}\right] \quad F_{2}(\boldsymbol{U})=\left[\begin{array}{c}{-H_{z}} \\ {0} \\ {H_{x}} \\ {E_{z}} \\ {0} \\ {-E_{x}}\end{array}\right] \quad F_{3}(\boldsymbol{U})=\left[\begin{array}{c}{H_{y}} \\ {-H_{x}} \\ {0} \\ {-E_{y}} \\ {E_{x}} \\ {0}\end{array}\right]
+% \end{equation}
+
+% \begin{equation}
+% \alpha \frac{\partial \boldsymbol{U}}{\partial t}+\frac{\partial F_{1}(\boldsymbol{U})}{\partial x}+\frac{\partial F_{2}(\boldsymbol{U})}{\partial y}+\frac{\partial F_{3}(\boldsymbol{U})}{\partial z}=0
+% \end{equation}
+
+% \begin{equation}
+% \alpha \frac{\partial \boldsymbol{U}}{\partial t}+\operatorname{div} F(\boldsymbol{U})=0
+% \end{equation}
+
+% \end{frame}
+
+\begin{frame}{Maxwell Equation, Spatial Discretization}
+
+\begin{equation}
+\alpha \int_{V} \frac{\partial \boldsymbol{U}}{\partial t} d V+\int_{V} \operatorname{div} F(\boldsymbol{U}) d \boldsymbol{V}=0
+\end{equation}
+
+\begin{equation}
+\frac{\partial \boldsymbol{U}_{i}}{\partial t}=-\frac{1}{\left|V_{i}\right|} \sum_{k\in\mathcal{N}_i}\left|S_{k}\right| \alpha^{-1} F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}
+\end{equation}
+
+\begin{equation}
+F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{n k}=\left[\begin{array}{c}{-\boldsymbol{a}_{n k} \times \boldsymbol{H}_{k}^{*}} \\ {\boldsymbol{a}_{n k} \times \boldsymbol{E}_{k}^{*}}\end{array}\right]
+\end{equation}
+    
+The spatial discretization methods focus on the key variable, $F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$. How to accurately compute the value of the flux is the kernel of FVM, that is, computing the $\boldsymbol{a}_{n k} \times \boldsymbol{H}_{k}^{*}, \boldsymbol{a}_{n k} \times \boldsymbol{E}_{k}^{*}$.
+\end{frame}
+
+% \subsection{How to Compute the Flux in Maxwell Equations}
+\begin{frame}{$F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$}
+How to calculate the flux, $F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$? The values on the cell boundary are needed, but we only store the values on the nodes.
+
+Then one might come up with these ideas,
+
+\begin{description}
+\item[\textbf{Interpolation}] By utility of the value interpolation from the values at adjacent nodes, the flux is easy to get and have a high-order accuracy. It would be quite useful for the continuously differentiable functions but probably not for $\varepsilon$ or $\mu$ on the boundary of materials. 
+\item[\textbf{Flux-Splitting}] To settle the problem arising from numerical instability of other methods, flux-splitting method is used.
+\end{description}
+The following content related to the flux-splitting method begins with a matrix constructed by the $\boldsymbol{a}_{\mathrm{n}}$.
+
+\end{frame}
+
+\begin{frame}{$F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$, $A$ Matrix}
+One can use the normal vectors of a cell's faces to represent the local coordinates, as a basis of coordinate,
+\begin{equation}
+R^{m_{i}} \ni\left(\xi_{1}, \cdots, \xi_{m_{i}}\right) \mapsto x=\sum_{k=1}^{m_{i}} \xi_{k} a_{\mathrm{nk}} \in R^{3}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \boldsymbol{U}}{\partial t}=-\alpha^{-1} \sum_{k=1}^{m_{i}}\left(\frac{\partial F_{1}}{\partial \boldsymbol{U}} \frac{\partial \xi_{k}}{\partial x}+\frac{\partial F_{2}}{\partial \boldsymbol{U}} \frac{\partial \xi_{k}}{\partial y}+\frac{\partial F_{3}}{\partial \boldsymbol{U}} \frac{\partial \xi_{k}}{\partial z}\right) \frac{\partial \boldsymbol{U}}{\partial \xi_{k}}
+\end{equation}
+\begin{equation}
+\frac{\partial \boldsymbol{U}}{\partial t}=-\alpha^{-1} \sum_{k=1}^{m_{i}} A\left(\boldsymbol{a}_{\mathrm{nk}}\right) \frac{\partial \boldsymbol{U}}{\partial n_{k}}
+\end{equation}
+\end{frame}
+
+
+\begin{frame}{$F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$, $A$ Matrix}
+\begin{equation}
+A\left(\boldsymbol{a}_{\mathrm{n}}\right)=\left[\begin{array}{cccccc}{0} & {0} & {0} & {0} & {n_{z}} & {-n_{y}} \\ {0} & {0} & {0} & {-n_{z}} & {0} & {n_{x}} \\ {0} & {0} & {0} & {n_{y}} & {-n_{x}} & {0} \\ {0} & {-n_{z}} & {n_{y}} & {0} & {0} & {0} \\ {n_{z}} & {0} & {-n_{x}} & {0} & {0} & {0} \\ {-n_{y}} & {n_{x}} & {0} & {0} & {0} & {0}\end{array}\right]
+\end{equation}
+
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)=\alpha^{-1} A\left(\boldsymbol{a}_{\mathrm{n}}\right)=P\ \Lambda\ P^{-1},
+\end{equation}
+
+with six eigenvalues also as the diagonal of $\Lambda$
+\begin{equation}
+\Lambda = diag \left(0,0, \frac{1}{\sqrt{\mu \varepsilon}}, \frac{1}{\sqrt{\mu \varepsilon}},-\frac{1}{\sqrt{\mu \varepsilon}},-\frac{1}{\sqrt{\mu \varepsilon}}\right) = diag \left(0,0,v,v,-v,-v\right),
+\end{equation}
+where $v$ is the light speed in the medium. 
+\end{frame}
+
+\begin{frame}{Maxwell Equations}
+
+For convenience to do computation, $s$ is denoted as a function mapping a vector to an antisymmetric 3 x 3 matrices.
+\begin{equation}
+s : R^{3} \rightarrow \Lambda^{2}\left(R^{3}\right)
+\end{equation}
+
+
+\begin{equation}
+s :\left(v_{1}, v_{2}, v_{3}\right) \longmapsto\left[\begin{array}{ccc}{0} & {-v_{3}} & {v_{2}} \\ {v_{3}} & {0} & {-v_{1}} \\ {-v_{2}} & {v_{1}} & {0}\end{array}\right]
+\end{equation}
+
+Special divergence is also defined, for handling the divergence of a 'matrix'.
+\begin{equation}
+[\operatorname{Div}(s(\boldsymbol{V}))]_{q}=\sum_{p=1}^{3} \frac{\partial}{\partial x^{p}}[s(\boldsymbol{V})]_{p q}
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}{Maxwell Equations}
+There are two essential characteristics of this funciton.
+
+Firstly, to calculate the curl of a vector-value variable by a divergence operator is not availiable. 
+\begin{equation}
+\operatorname{Div}(s(\boldsymbol{V}))=\nabla \times \boldsymbol{V}
+\end{equation}
+
+
+Secondly, it makes it easier to do cross-product.
+\begin{equation}
+s(\boldsymbol{a}_n)\boldsymbol{V}= \boldsymbol{a}_n \times \boldsymbol{V}
+\end{equation}
+
+
+\end{frame}
+\begin{frame}{$F\left(\boldsymbol{U}_{k}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{nk}}$, $A$ Matrix}
+\begin{equation}
+P=\left[\begin{array}{cccccc}{n_{x}} & {0} & {\frac{n_{x} n_{z}}{v \varepsilon}} & {-\frac{n_{x} n_{y}}{v \varepsilon}} & {-\frac{n_{x} n_{z}}{v \varepsilon}} & {\frac{n_{x} n_{y}}{v \varepsilon}} \\ {n_{y}} & {0} & {\frac{n_{y} n_{z}}{v \varepsilon}} & {\frac{n_{x}^{2}+n_{z}^{2}}{v \varepsilon}} & {-\frac{n_{y} n_{z}}{v \varepsilon}} & {-\frac{n_{x}^{2}+n_{z}^{2}}{v \varepsilon}} \\ {n_{z}} & {0} & {-\frac{n_{x}^{2}+n_{y}^{2}}{v \varepsilon}} & {-\frac{n_{y} n_{z}}{v \varepsilon}} & {\frac{n_{x}^{2}+n_{y}^{2}}{v \varepsilon}} & {\frac{n_{y} n_{z}}{v \varepsilon}} \\ {0} & {n_{x}} & {-n_{y}} & {-n_{z}} & {-n_{y}} & {-n_{z}} \\ {0} & {n_{y}} & {n_{x}} & {0} & {n_{x}} & {0} \\ {0} & {n_{z}} & {0} & {n_{x}} & {0} & {n_{x}}\end{array}\right]
+\end{equation}
+
+If we consider the variation of U to be only with respect to the $\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)$ direction, then equation simplies to,
+\begin{equation}
+\frac{\partial \boldsymbol{U}}{\partial t}=-\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right) \frac{\partial \boldsymbol{U}}{\partial n}
+\end{equation}
+
+Using the previous decomposition of $\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)$ and introducing the vector $V = P^{-1}U$
+\begin{equation}
+\frac{\partial V_{j}}{\partial t}+\lambda_{j} \frac{\partial V_{j}}{\partial n}=0 \quad j=1, \cdots, 6
+\end{equation}
+
+\end{frame}
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+\begin{equation}
+V_{j}(\xi, t)=f\left(\lambda_{j} t-\xi n\right),
+\end{equation}
+\begin{equation}
+V_{j}\left(\xi_{0}, t-\frac{d}{\lambda_{j}}\right)=V_{j}\left(\xi^{*}, t\right)
+\end{equation}
+
+A crude approximation would be like the following.
+\begin{equation}\label{VApproxBoundary}
+V_{j}(t)=V_{j}^{*}(t)
+\end{equation}
+
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)=P \Lambda P^{-1}=P\left(\Lambda^{+}+\Lambda^{-}\right) P^{-1}=P \Lambda^{+} P^{-1}+P \Lambda^{-} P^{-1}=\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+}+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{-}
+\end{equation}
+
+Multiply both sides of equation (\ref{VApproxBoundary}) by $P\Lambda^+$
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} \boldsymbol{U}=\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} \boldsymbol{U}^{*}
+\end{equation}
+\end{frame}
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+\tiny
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+}=\frac{1}{2}\left[\begin{array}{cccccc}{\left(n_{z}^{2}+n_{y}^{2}\right) v} & {-n_{x} n_{y} v} & {-n_{x} n_{z} v} & {0} & {n_{z} \frac{1}{\varepsilon}} & {-n_{y} \frac{1}{\varepsilon}} \\ {-n_{x} n_{y} v} & {\left(n_{x}^{2}+n_{z}^{2}\right) v} & {-n_{y} n_{z} v} & {-n_{z} \frac{1}{\varepsilon}} & {0} & {n_{x} \frac{1}{\varepsilon}} \\ {-n_{x} n_{z} v} & {-n_{y} n_{z} v} & {\left(n_{x}^{2}+n_{y}^{2}\right) v} & {n_{y} \frac{1}{\varepsilon}} & {-n_{x} \frac{1}{\varepsilon}} & {0} \\ {0} & {-n_{z} \frac{1}{\mu}} & {n_{y} \frac{1}{\mu}} & {\left(n_{z}^{2}+n_{y}^{2}\right) v} & {-n_{x} n_{y} v} & {-n_{x} n_{z} v} \\ {n_{z} \frac{1}{\mu}} & {0} & {-n_{x} \frac{1}{\mu}} & {-n_{x} n_{y} v} & {\left(n_{x}^{2}+n_{z}^{2}\right) v} & {-n_{y} n_{z} v} \\ {-n_{y} \frac{1}{\mu}} & {n_{x} \frac{1}{\mu}} & {0} & {-n_{x} n_{z} v} & {-n_{y} n_{z} v} & {\left(n_{x}^{2}+n_{y}^{2}\right) v}\end{array}\right]
+\end{equation}
+\normalsize
+
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{-}=-\tilde{A}\left(-\boldsymbol{a}_{\mathrm{n}}\right)^{+}
+\end{equation}
+
+\begin{equation}
+\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+}=\frac{1}{2}\begin{bmatrix}
+-vs^2(\boldsymbol{a}_n) & \frac{-1}{\varepsilon} s(\boldsymbol{a}_n) \\ 
+\frac{1}{\mu} s(\boldsymbol{a}_n) & -vs^2(\boldsymbol{a}_n
+\end{bmatrix},\quad \tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} \boldsymbol{U}=\tilde{A}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} \boldsymbol{U}^{*}
+\end{equation}
+
+
+
+
+\begin{equation}
+Y=\sqrt{\frac{\varepsilon}{\mu}}, Z=\sqrt{\frac{\mu}{\varepsilon}}
+\end{equation}
+\end{frame}
+
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+For \textbf{dielectric contrast},
+\begin{equation}
+\left\{\begin{array}{l}{\boldsymbol{a}_{\mathbf{n}} \times \boldsymbol{E}^{*}=\boldsymbol{a}_{\mathbf{n}} \times \boldsymbol{E}^{* *}} \\ {\boldsymbol{a}_{\mathbf{n}} \times \boldsymbol{H}^{*}=\boldsymbol{a}_{\mathbf{n}} \times \boldsymbol{H}^{* *}}\end{array}\right.
+\end{equation}
+
+
+\begin{equation}
+\left\{\begin{array}{l}{Y^{\mathrm{L}} \boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{*}-\boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{*}\right)=Y^{\mathrm{L}} \boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{\mathrm{L}}-\boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{\mathrm{L}}\right)} \\ {Y^{\mathrm{R}} \boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{* *}+\boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{* *}\right)=Y^{\mathrm{R}} \boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{\mathrm{R}}+\boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{\mathrm{R}}\right)}\end{array}\right.
+\end{equation}
+
+
+\begin{equation}
+F\left(\boldsymbol{U}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{n}}=F\left(\boldsymbol{U}^{* *}\right) \cdot \boldsymbol{a}_{\mathrm{n}}=\alpha^{\mathrm{L}} T^{\mathrm{L}} \tilde{A}^{\mathrm{L}}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} U^{\mathrm{L}}+\alpha^{\mathrm{R}} T^{\mathrm{R}} \tilde{A}^{\mathrm{R}}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{-} \boldsymbol{U}^{\mathrm{R}}
+\end{equation}
+
+\begin{equation}
+T^{\mathrm{L}, \mathrm{R}}=\left[\begin{array}{cc}{\frac{2 Z^{\mathrm{L} \cdot R}}{Z^{\mathrm{L}}+Z^{\mathrm{R}}}} & {0} \\ {0} & {\frac{2 Y^{L, R}}{Y^{\mathrm{L}}+Y^{\mathrm{R}}}}\end{array}\right]
+\end{equation}
+
+
+
+
+
+\end{frame}
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+\begin{equation}
+\alpha \frac{\partial U_{i}}{\partial t}=\frac{-1}{\left|V_{i}\right|} \sum_{k\in\mathcal{N}_i}\left|S_{k}\right|\left[\alpha^{\mathrm{L}} T^{\mathrm{L}} \tilde{A}^{\mathrm{L}}\left(\boldsymbol{a}_{\mathrm{n} k}\right)^{+} U_{k^{-}}+\alpha^{\mathrm{R}} T^{\mathrm{R}} \tilde{A}^{\mathrm{R}}\left(\boldsymbol{a}_{\mathrm{nk}}\right)^{-} U_{k^{+}}\right]
+\end{equation}
+
+If both sides' permittivity and peameability are similar such that the error could be omitted, the formula turns out to be,
+\begin{equation}
+\frac{\partial U_{i}}{\partial t}=\frac{-1}{\left|V_{i}\right|} \sum_{k\in\mathcal{N}_i}\left|S_{k}\right|\left[\tilde{A}\left(\boldsymbol{a}_{\mathrm{nk}}\right)^{+} U_{k^{-}}+\tilde{A}\left(\boldsymbol{a}_{\mathrm{nk}}\right)^{-} U_{k^{+}}\right]
+\end{equation}
+\end{frame}
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+For \textbf{perfect conductor},
+\begin{equation}
+\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{*}=0
+\end{equation}
+
+\begin{equation}
+\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{*}=Y \boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}\right)+\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}
+\end{equation}
+
+\begin{equation}
+F\left(\boldsymbol{U}^{*}\right) \cdot \boldsymbol{a}_{\mathrm{n}}=\alpha^{\mathrm{L}} T_{p c}^{\mathrm{L}} \tilde{A}^{\mathrm{L}}\left(\boldsymbol{a}_{\mathrm{n}}\right)^{+} \boldsymbol{U}^{\mathrm{L}}
+\end{equation}
+
+\begin{equation}
+T_{p c}^{\mathrm{L}}=\lim _{Z^{\mathrm{R}} \rightarrow 0} T^{\mathrm{L}}
+\end{equation}
+
+\begin{equation}
+\left[T_{p c}^{\mathrm{L}}\right]=\left[\begin{array}{cc}{2 \mathrm{Id}} & {0} \\ {0} & {0}\end{array}\right]
+\end{equation}
+
+\end{frame}
+
+\begin{frame}{Maxwell Equations, Flux-Splitting}
+\textbf{Radiation Boundary Condition}
+\begin{description}
+    \item[Silver-Muller] The condition is simply that the flux on the outer boundary corresponds
+to outgoing waves only. By the following equation, it is enough to calculate the result.
+
+\begin{equation}
+\sqrt{\frac{\varepsilon_{0}}{\mu_{0}}} \boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{E}^{*}+\boldsymbol{a}_{\mathrm{n}} \times\left(\boldsymbol{a}_{\mathrm{n}} \times \boldsymbol{H}^{*}\right)=0
+\end{equation}
+    \item[PML] Perfectly Matched Layer. Compared to Silver-Muller condition, PML is more like an active operation to decrease the noise reflecting electromagnetic field.
+    \begin{equation}
+\frac{\sigma}{\varepsilon_{0}}=\frac{\sigma^{*}}{\mu_{0}}
+\end{equation}
+\end{description}
+
+\end{frame}
